@@ -1,34 +1,34 @@
-name: Universal Path Combine Files
+name: Ultimate History Recovery and Merge
 
 on:
   workflow_dispatch:
 
 jobs:
-  merge-files:
+  recover-and-merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Full Repository Code
+      - name: Checkout Full Repository History
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Pulls full git commit history records
 
-      - name: Locate and Stitch Text Pieces into Index
+      - name: Extract Split Parts from History Commit
         run: |
-          # Finds where the parts live and stores the folder path
-          TARGET_DIR=$(dirname $(find . -name "Starlike_Client_Offline-part01.txt" | head -n 1))
-          echo "Found files in directory: $TARGET_DIR"
-          
-          # Strips out any old placeholder empty files
-          rm -f index.html
-          rm -f $TARGET_DIR/index.html
-          
-          # Combines the files directly inside their actual folder location
-          cat $TARGET_DIR/Starlike_Client_Offline-part*.txt > $TARGET_DIR/index.html
+          # Pulls the 4 lost text files out of your specific commit ID
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part01.txt || true
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part02.txt || true
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part03.txt || true
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part04.txt || true
 
-      - name: Commit and Push Restored File Back to Repo
+      - name: Force Stitch Text Pieces into Index HTML
+        run: |
+          rm -f index.html
+          cat Starlike_Client_Offline-part*.txt > index.html
+
+      - name: Commit and Push Restored Index to Repo
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Automated merge: Stitched files inside their exact directory location" || echo "No changes to commit"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add index.html
+          git commit -m "Automated merge: Successfully recovered source parts from history commit and generated complete index.html" || echo "No changes"
           git push --force
