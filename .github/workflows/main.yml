@@ -1,4 +1,4 @@
-name: Precise Combine Split Client Files
+name: Universal Path Combine Files
 
 on:
   workflow_dispatch:
@@ -12,14 +12,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Stitch Text Pieces into Index
+      - name: Locate and Stitch Text Pieces into Index
         run: |
-          cat Starlike_Client_Offline-part*.txt > index.html
+          # Finds where the parts live and stores the folder path
+          TARGET_DIR=$(dirname $(find . -name "Starlike_Client_Offline-part01.txt" | head -n 1))
+          echo "Found files in directory: $TARGET_DIR"
+          
+          # Strips out any old placeholder empty files
+          rm -f index.html
+          rm -f $TARGET_DIR/index.html
+          
+          # Combines the files directly inside their actual folder location
+          cat $TARGET_DIR/Starlike_Client_Offline-part*.txt > $TARGET_DIR/index.html
 
       - name: Commit and Push Restored File Back to Repo
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@://github.com"
-          git add index.html
-          git commit -m "Automated merge: Rebuilt full index.html from exact file match"
-          git push
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Automated merge: Stitched files inside their exact directory location" || echo "No changes to commit"
+          git push --force
