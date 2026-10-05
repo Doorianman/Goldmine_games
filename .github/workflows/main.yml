@@ -12,13 +12,13 @@ jobs:
 
       - name: Download Split Parts Directly from Web API
         run: |
-          # Downloads the 4 massive text parts straight from your specific healthy commit via raw links
+          # Fetches the 4 text parts from the exact raw content delivery endpoints
           curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part01.txt
           curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part02.txt
           curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part03.txt
           curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part04.txt
           
-          # Debug step: check if files are actually here and populated
+          # Verification check
           ls -lh Starlike_Client_Offline-part*.txt
 
       - name: Stitch Text Pieces into Index HTML
@@ -31,5 +31,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@://github.com"
           git add index.html
-          git commit -m "Automated merge: Rebuilt full index.html via direct cloud downloads" || echo "No changes"
+          git commit -m "Automated merge: Rebuilt full index.html via fixed cloud download channels" || echo "No changes"
           git push --force
