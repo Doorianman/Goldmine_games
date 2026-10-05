@@ -1,4 +1,4 @@
-name: Ultimate History Recovery and Merge
+name: Full History Force Recovery
 
 on:
   workflow_dispatch:
@@ -10,17 +10,20 @@ jobs:
       - name: Checkout Full Repository History
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Pulls full git commit history records
+          fetch-depth: 0
 
-      - name: Extract Split Parts from History Commit
+      - name: Force Extract Split Parts from History Commit
         run: |
-          # Pulls the 4 lost text files out of your specific commit ID
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part01.txt || true
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part02.txt || true
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part03.txt || true
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part04.txt || true
+          # Pulls and forces the files to write directly into your active folder
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part01.txt
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part02.txt
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part03.txt
+          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part04.txt
+          
+          # Unstages them so the system treats them as normal files
+          git reset HEAD Starlike_Client_Offline-part*.txt
 
-      - name: Force Stitch Text Pieces into Index HTML
+      - name: Stitch Text Pieces into Index HTML
         run: |
           rm -f index.html
           cat Starlike_Client_Offline-part*.txt > index.html
@@ -28,7 +31,7 @@ jobs:
       - name: Commit and Push Restored Index to Repo
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Automated merge: Successfully recovered source parts from history commit and generated complete index.html" || echo "No changes"
+          git commit -m "Automated merge: Rebuilt full index.html from history records" || echo "No changes"
           git push --force
