@@ -7,21 +7,19 @@ jobs:
   recover-and-merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Full Repository History
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Force Extract Split Parts from History Commit
+      - name: Fetch Lost History Commit
         run: |
-          # Pulls and forces the files to write directly into your active folder
+          # Reaches into the GitHub cloud database to pull the specific hidden commit object
+          git fetch origin e6f2d7550ebb14372e9ba740dc56a49dc56a49d4
+          
+          # Extracts the files out of that fetched history block into your folder
           git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part01.txt
           git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part02.txt
           git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part03.txt
           git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part04.txt
-          
-          # Unstages them so the system treats them as normal files
-          git reset HEAD Starlike_Client_Offline-part*.txt
 
       - name: Stitch Text Pieces into Index HTML
         run: |
@@ -33,5 +31,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Automated merge: Rebuilt full index.html from history records" || echo "No changes"
+          git commit -m "Automated merge: Rebuilt full index.html from cloud history" || echo "No changes"
           git push --force
