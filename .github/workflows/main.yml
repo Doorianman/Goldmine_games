@@ -1,24 +1,25 @@
-name: Full History Force Recovery
+name: Direct Cloud Asset Recovery
 
 on:
   workflow_dispatch:
 
 jobs:
-  recover-and-merge:
+  download-and-merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Full Repository History
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Downloads all history logs so the runner recognizes your old commit reference
 
-      - name: Force Extract Split Parts from History Commit
+      - name: Download Split Parts Directly from Web API
         run: |
-          # Extracts the files out of that fetched history block into your folder
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part01.txt
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part02.txt
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part03.txt
-          git checkout e6f2d7550ebb14372e9ba740dc56a49dc56a49d4 -- Starlike_Client_Offline-part04.txt
+          # Downloads the 4 massive text parts straight from your specific healthy commit via raw links
+          curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part01.txt
+          curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part02.txt
+          curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part03.txt
+          curl -L "https://githubusercontent.com" -o Starlike_Client_Offline-part04.txt
+          
+          # Debug step: check if files are actually here and populated
+          ls -lh Starlike_Client_Offline-part*.txt
 
       - name: Stitch Text Pieces into Index HTML
         run: |
@@ -30,5 +31,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@://github.com"
           git add index.html
-          git commit -m "Automated merge: Rebuilt full index.html from cloud history logs" || echo "No changes"
+          git commit -m "Automated merge: Rebuilt full index.html via direct cloud downloads" || echo "No changes"
           git push --force
